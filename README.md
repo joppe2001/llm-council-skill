@@ -24,7 +24,14 @@ has them review each other, and picks a final answer. cool idea, but it needs a 
 OpenRouter key.
 
 this is that same idea rebuilt as a native Claude Code skill. no web app, no api key, no server.
-it just runs inside Claude Code using subagents on different models.
+it just runs inside Claude Code using subagents.
+
+it's also built to be a **non-yes-man council**. the original gets its value from cross-vendor
+diversity (gpt vs gemini vs claude vs grok, all smart but trained differently). we're claude-only,
+so we can't copy that. instead the diversity comes from giving each member a distinct adversarial
+role (a skeptic, a first-principles thinker, a pragmatist) and from the anonymous peer review,
+where a model critiques answers without knowing which one is its own. that's the part that keeps
+it honest instead of three models politely agreeing with each other.
 
 ## how it works
 
@@ -32,26 +39,27 @@ three stages, same spirit as the original:
 
 ```mermaid
 flowchart TD
-    Q[your question] --> A[Member: Opus]
-    Q --> B[Member: Sonnet]
-    Q --> C[Member: Haiku]
+    Q[your question] --> A[Opus: first-principles thinker]
+    Q --> B[Opus: skeptic / devil's advocate]
+    Q --> C[Sonnet: pragmatist]
     A --> R{anonymous peer review}
     B --> R
     C --> R
-    R --> CH[Chairman synthesizes final answer]
+    R --> CH[Chairman picks the best-argued answer]
     CH --> OUT[one answer + council notes]
 ```
 
-1. **collect.** your question gets fanned out to 3 council members in parallel, each on a
-   different model (Opus / Sonnet / Haiku) so the reasoning actually diverges instead of
-   three copies agreeing with each other.
-2. **review.** each member gets shown all three answers, anonymized and shuffled, and ranks
-   them. anonymity is the whole trick. nobody knows which answer is their own, so the critique
-   stays honest.
-3. **chairman.** a final model reads everything (the answers plus the reviews) and writes the
-   one answer the council would actually stand behind, fixing whatever the reviewers caught.
+1. **collect.** your question gets fanned out to 3 council members in parallel, each given a
+   different adversarial role so they actually push in different directions instead of nodding
+   along. default is two Opus members plus one Sonnet.
+2. **review.** each member gets shown all three answers, anonymized and shuffled, and is told to
+   find the weakest claim in each and rank them. nobody knows which answer is their own, so the
+   critique stays honest. this is the anti-yes-man engine.
+3. **chairman.** a final model reads everything (the answers plus the critiques) and picks the
+   best-argued position, even a minority one. it does not average everyone into a vague middle.
 
-best for the hard, open-ended, or high-stakes stuff where a second (and third) opinion is worth it.
+best for the hard, open-ended, or high-stakes stuff where you want a real second (and third)
+opinion instead of a confident-sounding rubber stamp.
 
 ## install
 
@@ -120,12 +128,16 @@ you can steer it in plain english:
 | you want | say something like |
 | --- | --- |
 | best possible answer | "run an all-Opus council" |
-| fast and cheap | "quick sonnet/haiku council" |
-| bigger panel | "run a 5-member council" |
+| fast and cheap | "quick cheap council" (uses lighter models, weaker but faster) |
+| bigger panel | "run a 5-member council" (adds more roles, not duplicates) |
 | no peer review, just answers | "skip the review, just give me the parallel answers" |
+
+> default council is Opus (first-principles) + Opus (skeptic) + Sonnet (pragmatist). the diversity
+> comes from the roles, not the model tiers.
 
 > heads up: a full run fires off several subagents (3 answers + 3 reviews + 1 chairman), so it
 > burns more tokens than a normal reply. save it for questions that actually deserve a council.
+> also: skipping the review removes the main anti-yes-man mechanism, so the council gets weaker.
 
 ## repo layout
 

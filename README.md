@@ -28,10 +28,10 @@ it just runs inside Claude Code using subagents.
 
 it's also built to be a **non-yes-man council**. the original gets its value from cross-vendor
 diversity (gpt vs gemini vs claude vs grok, all smart but trained differently). we're claude-only,
-so we can't copy that. instead the diversity comes from giving each member a distinct adversarial
-role (a skeptic, a first-principles thinker, a pragmatist) and from the anonymous peer review,
-where a model critiques answers without knowing which one is its own. that's the part that keeps
-it honest instead of three models politely agreeing with each other.
+so we can't copy that. instead the diversity comes from giving each member a distinct **persona**
+(a real reasoning method plus a temperament) and from the anonymous peer review, where a model
+critiques answers without knowing which one is its own. that's the part that keeps it honest
+instead of three models politely agreeing with each other.
 
 ## how it works
 
@@ -60,6 +60,26 @@ flowchart TD
 
 best for the hard, open-ended, or high-stakes stuff where you want a real second (and third)
 opinion instead of a confident-sounding rubber stamp.
+
+## the personas
+
+diversity is the whole game, so each member isn't just "a model", it's a persona with a real
+cognitive stance: a way it reasons, a thing it optimizes for, a failure mode it refuses to
+tolerate, and a temperament so the disagreement stays sharp. the default council is the first
+three. bigger councils pull more from the library.
+
+| persona | how it reasons | optimizes for | allergic to |
+| --- | --- | --- | --- |
+| First-principles engineer | strips assumptions, reasons up from fundamentals | correctness | cargo-culting |
+| Red-teamer / skeptic | assumes the popular answer is wrong and attacks it | robustness | overconfidence |
+| Pragmatist / operator | what actually ships under real constraints | shippability | ivory-tower purity |
+| Systems thinker | second-order effects, incentives, long-term | durability | local wins that blow up later |
+| Empiricist | demands data, base rates, examples | groundedness | vibes-based claims |
+| User advocate | the real human affected, plain language | real usefulness | technically-correct-but-useless |
+
+the personas color the answers and critiques, but they're stripped out before the anonymous
+review. a reviewer who knows "this is the grumpy skeptic" would judge the tone instead of the
+reasoning. personas make the inputs diverse, anonymity keeps the judging fair.
 
 ## install
 

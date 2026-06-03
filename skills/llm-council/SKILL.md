@@ -7,13 +7,13 @@ description: "Convene a council of multiple models to deliberate on a question, 
 
 A multi-model deliberation skill, ported from [karpathy/llm-council](https://github.com/karpathy/llm-council).
 The original is a FastAPI + React web app calling OpenRouter; this skill reproduces its
-**three-stage council process** natively in Claude Code using subagents — no API key, no web app.
+**three-stage council process** natively in Claude Code using subagents (no API key, no web app).
 
 ## The Process
 
 When invoked with a question Q, run these three stages in order.
 
-### Stage 1 — Collect (fan-out)
+### Stage 1: Collect (fan-out)
 
 Dispatch Q to **3 council members in parallel**, each a subagent on a different model so
 their reasoning genuinely diverges. Launch all three in a single message (one `Agent` call each):
@@ -35,7 +35,7 @@ Each member's prompt is exactly:
 Collect the three responses verbatim. Label them internally R_A, R_B, R_C but **do not reveal
 which model produced which** in the next stage.
 
-### Stage 2 — Review (anonymous peer review)
+### Stage 2: Review (anonymous peer review)
 
 Dispatch **3 reviewer subagents in parallel** (reuse the same three models). Each reviewer
 receives all three answers presented **anonymously and shuffled** as "Response 1 / 2 / 3"
@@ -59,9 +59,9 @@ receives all three answers presented **anonymously and shuffled** as "Response 1
 
 Collect the reviews and rankings.
 
-### Stage 3 — Chairman (synthesis)
+### Stage 3: Chairman (synthesis)
 
-Act as the **Chairman yourself** (the main model) — or dispatch one `opus` subagent if you want
+Act as the **Chairman yourself** (the main model), or dispatch one `opus` subagent if you want
 isolation. Given Q, the three original answers, and the three anonymous reviews, produce the
 final answer. Chairman prompt / mindset:
 
@@ -73,7 +73,7 @@ final answer. Chairman prompt / mindset:
 ## Output to the user
 
 Present:
-1. **Final answer** (the Chairman's synthesis) — this is the headline.
+1. **Final answer** (the Chairman's synthesis). This is the headline.
 2. A short **council notes** section: the consensus, any notable disagreement between members,
    and what the reviews changed. Keep it tight.
 
@@ -88,6 +88,6 @@ Optionally, if the user asks to "show the work", include each member's full resp
 
 ## Notes
 
-- Keep member identities hidden during review — anonymity is what makes the peer review honest;
+- Keep member identities hidden during review. Anonymity is what makes the peer review honest;
   it's the core mechanic of the original project.
 - Run each stage's subagents in parallel (multiple `Agent` calls in one message) for speed.
